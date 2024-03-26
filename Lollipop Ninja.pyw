@@ -10,7 +10,7 @@ import os
 pygame.mixer.pre_init(44100, -16, 2, 512)
 pygame.init()
 pygame.mixer.set_num_channels(32)
-pygame.display.set_caption('Lollipop')
+pygame.display.set_caption('Ninja')
 global WINDOWWIDTH, WINDOWHEIGHT
 global screen
 WINDOWWIDTH = 600
@@ -19,21 +19,7 @@ screen = pygame.display.set_mode((WINDOWWIDTH, WINDOWHEIGHT),pygame.RESIZABLE)
 Display = pygame.Surface((300,200))
 
 # controller
-global ButtonStates, InitialButtons, axes, controllerbuttons, joystick_count, joystick
-controller_mode = False
-pygame.joystick.init()
-joystick_count = pygame.joystick.get_count()
-if joystick_count > 0:
-    controller_mode = True
-if controller_mode == True:
-    for i in range(joystick_count):
-        joystick = pygame.joystick.Joystick(i)
-        joystick.init()
-    axes = joystick.get_numaxes()
-    controllerbuttons = joystick.get_numbuttons()
-    Joystick1State = [False,False,False,False]
-    ButtonStates = [0,0,0,0,0,0,0,0,0,0,0,0]
-    InitialButtons = [0,0,0,0,0,0,0,0,0,0,0,0]
+
     
 def load_img(path):
     img = pygame.image.load(path).convert()
@@ -355,79 +341,18 @@ def gen_clouds(edges):
             clouds.append([random.choice(cloud_list),random.randint(x,x+size_x)/depth,random.randint(y,y+size_y)/depth,depth])
     return clouds
 # Controller Setup ------------------------------------------- #
-if controller_mode == True:
-    img_1 = load_img('data/images/controller_setup/controller_0.png')
-    img_2 = load_img('data/images/controller_setup/controller_1.png')
-    img_3 = load_img('data/images/controller_setup/controller_2.png')
-    img_4 = load_img('data/images/controller_setup/controller_3.png')
-    img_5 = load_img('data/images/controller_setup/controller_4.png')
-    controller_images = [img_1,img_2,img_3,img_4,img_5]
-    messages = ['Press the A button.','Press the left bumper(not the trigger).','Press the right bumper(not the trigger).','Tilt the left joystick right.','Press the back button.']
-    stage = 0
-    a_button_id = None
-    r_trigger_button_id = None
-    l_trigger_button_id = None
-    stick_axis_id = None
-    back_button_id = None
-    while True:
-        Display.fill((0,0,0))
-        ShowText('Controller Setup:',4,4,1,245,Font_0,Display,overflow='normal')
-        ShowText(messages[stage],4,14,1,245,Font_0,Display,overflow='normal')
-        Display.blit(controller_images[stage],(100,100))
-        for i in range(controllerbuttons):
-            if ButtonStates[i] == 0:
-                InitialButtons[i] = joystick.get_button(i)
-            ButtonStates[i] = joystick.get_button(i)
-            if InitialButtons[i] == 1:
-                if stage == 0:
-                    a_button_id = i
-                    stage += 1
-                elif stage == 1:
-                    l_trigger_button_id = i
-                    stage += 1
-                elif stage == 2:
-                    r_trigger_button_id = i
-                    stage += 1
-                elif stage == 4:
-                    back_button_id = i
-                    stage += 1
-                InitialButtons[i] = 0
-        for i in range(axes):
-            axis = joystick.get_axis(i)
-            if abs(axis) > 0.4:
-                if stage == 3:
-                    stick_axis_id = i
-                    stage += 1
-        if stage == 5:
-            break
-        for event in pygame.event.get():
-            if event.type == QUIT:
-                pygame.quit()
-                sys.exit()
-            if event.type == pygame.VIDEORESIZE:
-                WINDOWWIDTH = event.size[0]
-                WINDOWHEIGHT = event.size[1]
-                screen = pygame.display.set_mode((WINDOWWIDTH, WINDOWHEIGHT),pygame.RESIZABLE)
-        ratio = WINDOWWIDTH/WINDOWHEIGHT
-        if ratio < 1.5:
-            width = WINDOWWIDTH
-            height = WINDOWWIDTH/1.5
-        else:
-            height = WINDOWHEIGHT
-            width = WINDOWHEIGHT*1.5
-        screen.blit(pygame.transform.scale(Display,(int(width),int(height))),(0,0))
-        pygame.display.update()
-        mainClock.tick(40)
+
+
 # Save File -------------------------------------------------- #
-f = open('data/save.txt','r')
-save_dat = f.readlines()
-f.close()
-save_dat[0] = save_dat[0][:-1]
+# f = open('data/save.txt','r')
+# save_dat = f.readlines()
+# f.close()
+# save_dat[0] = save_dat[0][:-1]
 # Title Screen ----------------------------------------------- #
 global run_type
 run_type = 'classic' # classic, segmented speedrun, one-shot speedrun
 global map_set
-map_set = 'standard' # standard, 48h version
+map_set = 'standard' # standard
 def find(l,target):
     loc = 0
     for item in l:
@@ -439,11 +364,12 @@ def find(l,target):
     return loc
 def title_screen():
     global run_type, map_set, screen, WINDOWWIDTH, WINDOWHEIGHT
-    map_sets = ['standard', '48h version']
+    map_sets = ['standard']
     run_types = ['classic', 'segmented speedrun', 'one-shot speedrun']
     map_sets_index = find(map_sets,map_set)
     run_types_index = find(run_types,run_type)
-    menu_options = ['Lollipop', '', 'Play', 'Level Set: ' + map_set, 'Rules: ' + run_type, 'Clear Save', 'Exit']
+    #Clear save
+    menu_options = ['Lollipop', '', 'Play', 'Level Set: ' + map_set, 'Rules: ' + run_type, 'Exit']
     pointer = 2
     in_menu = True
     hit_zero = False
@@ -454,61 +380,7 @@ def title_screen():
     while in_menu:
         Display.fill((0,0,0))
         
-        if controller_mode == True:
-            for button in range(len(InitialButtons)):
-                InitialButtons[button] = 0
-            for i in range(controllerbuttons):
-                if ButtonStates[i] == 0:
-                    InitialButtons[i] = joystick.get_button(i)
-                ButtonStates[i] = joystick.get_button(i)
-            
-            a_button = InitialButtons[a_button_id]
-            stick_tilt = joystick.get_axis(stick_axis_id)
-            if abs(stick_tilt) < 0.4:
-                hit_zero = True
-                
-            if hit_zero == True:
-                if stick_tilt > 0.7:
-                    pointer += 1
-                    if pointer == len(menu_options):
-                        pointer = 2
-                    hit_zero = False
-                if stick_tilt < -0.7:
-                    pointer -= 1
-                    if pointer == 1:
-                        pointer = len(menu_options)-1
-                    hit_zero = False
 
-            if a_button == 1:
-                selection = menu_options[pointer]
-                if selection == '- Exit':
-                    pygame.quit()
-                    sys.exit()
-                if selection == '- Play':
-                    in_menu = False
-                if selection == '- Level Set: ' + map_set:
-                    map_sets_index += 1
-                    if map_sets_index == len(map_sets):
-                        map_sets_index = 0
-                    map_set = map_sets[map_sets_index]
-                if selection == '- Rules: ' + run_type:
-                    run_types_index += 1
-                    if run_types_index == len(run_types):
-                        run_types_index = 0
-                    run_type = run_types[run_types_index]
-                if selection == '- Clear Save':
-                    file = open('data/save.txt','w')
-                    file.write('48h version\n1')
-                    file.close()
-                    current_level = 1
-                if selection == '- Resolution: ' + str(resolutions[resolution_index][0]) + 'x' + str(resolutions[resolution_index][1]):
-                    resolution_index += 1
-                    if resolution_index == len(resolutions):
-                        resolution_index = 0
-                    WINDOWWIDTH = resolutions[resolution_index][0]
-                    WINDOWHEIGHT = resolutions[resolution_index][1]
-                    screen = pygame.display.set_mode((WINDOWWIDTH, WINDOWHEIGHT),pygame.RESIZABLE)
-        
         for event in pygame.event.get():
             if event.type == QUIT:
                 pygame.quit()
@@ -543,10 +415,6 @@ def title_screen():
                         if run_types_index == len(run_types):
                             run_types_index = 0
                         run_type = run_types[run_types_index]
-                    if selection == '- Clear Save':
-                        file = open('data/save.txt','w')
-                        file.write('48h version\n1')
-                        file.close()
                     if selection == '- Resolution: ' + str(resolutions[resolution_index][0]) + 'x' + str(resolutions[resolution_index][1]):
                         resolution_index += 1
                         if resolution_index == len(resolutions):
@@ -561,8 +429,6 @@ def title_screen():
         for option in menu_options:
             ShowText(option,4,4+y*12,1,245,Font_0,Display,overflow='normal')
             y += 1
-        if controller_mode == True:
-            ShowText('Tilt stick L/R for selection(up/down unregistered)',110,4,1,245,Font_0,Display,overflow='normal')
         if WINDOWWIDTH > 900:
             ShowText('You need a single beefy CPU core to run the game\nat this resolution.',110,64,1,245,Font_0,Display,overflow='normal')
         ratio = WINDOWWIDTH/WINDOWHEIGHT
@@ -577,10 +443,10 @@ def title_screen():
         mainClock.tick(40)
 title_screen()
 # Save File -------------------------------------------------- #
-f = open('data/save.txt','r')
-save_dat = f.readlines()
-f.close()
-save_dat[0] = save_dat[0][:-1]
+# f = open('data/save.txt','r')
+# save_dat = f.readlines()
+# f.close()
+# save_dat[0] = save_dat[0][:-1]
 # Audio ------------------------------------------------------ #
 poof_sound = pygame.mixer.Sound('data/SFX/poof.wav')
 bomb_sound = pygame.mixer.Sound('data/SFX/bomb_poof.wav')
@@ -640,14 +506,9 @@ c_name = 'C'
 
 wall_jump_count = 0
 
-if controller_mode == True:
-    jump_name = 'A'
-    arrow_keys_name = 'left stick'
-    x_name = 'left bumper'
-    c_name = 'right bumper'
+
 text_box = ['Use the ' + arrow_keys_name + ' to move.',160]
-level_text = {'48h version':{1:'Use the ' + arrow_keys_name + ' to move.',2:'Use ' + jump_name + ' to jump. Try wall jumping.',3:'Use ' + x_name + ' to go invisible so people don\'t stare at you.',4:'Surround people in smoke using ' + c_name + ' so you go unseen.',5:'Swirly like lollipops.',6:'Sticky like lollipops.',7:'Flamable like lollipops.'},
-              'standard':{1:'Use the ' + arrow_keys_name + ' to move.',2:'Use ' + jump_name + ' to jump.',3:'Use ' + jump_name + ' to wall jump. Just hold one direction and press jump when between walls.',4:'Practice some more jumping.',5:'Don\'t let people stare at you for too long.',6:'Use ' + x_name + ' to go invisible so people don\'t stare at you.',7:'This looks tricky...',8:'Surround people in smoke using ' + c_name + ' so you go unseen.',
+level_text = {'standard':{1:'Use the ' + arrow_keys_name + ' to move.',2:'Use ' + jump_name + ' to jump.',3:'Use ' + jump_name + ' to wall jump. Just hold one direction and press jump when between walls.',4:'Practice some more jumping.',5:'Don\'t let people stare at you for too long.',6:'Use ' + x_name + ' to go invisible so people don\'t stare at you.',7:'This looks tricky...',8:'Surround people in smoke using ' + c_name + ' so you go unseen.',
                           9:'What a lovely pit.',10:'Scrrraaaaaaaaape...',11:'Where\'s the lollipop?',12:'Sugar.',13:'All I wanted was a lollipop...',14:'Hey look! Another hole...',15:'This seems familiar.',16:'Almost sated.'}}
 
 
@@ -664,9 +525,9 @@ music.play(-1)
 
 current_level = 1
 
-if save_dat[0] == map_set:
-    if run_type == 'classic':
-        current_level = int(save_dat[1])
+# if save_dat[0] == map_set:
+#     if run_type == 'classic':
+#         current_level = int(save_dat[1])
 
 level, items, decor, spawn, edges = load_map(map_set + '/level_' + str(current_level))
 clouds = gen_clouds(edges)
@@ -900,8 +761,6 @@ while True:
             wall_jump_count += 1
             if wall_jump_count == 1:
                 if ninja_ground_timer < 35:
-                    if map_set != '48h version':
-                        ninja_gravity = -3.5
                         if ninja_direction == 'r':
                             left_cooldown = 3
                             ninja_slide = 2
@@ -1102,83 +961,7 @@ while True:
 
 
     # Controller --------------------------------------------- #
-    if controller_mode == True:
-        for button in range(len(InitialButtons)):
-            InitialButtons[button] = 0
-        for i in range(controllerbuttons):
-            if ButtonStates[i] == 0:
-                InitialButtons[i] = joystick.get_button(i)
-            ButtonStates[i] = joystick.get_button(i)
-        
-        a_button = InitialButtons[a_button_id]
-        l_trigger = InitialButtons[l_trigger_button_id]
-        r_trigger = InitialButtons[r_trigger_button_id]
-        if InitialButtons[back_button_id] == 1:
-            title_screen()
-            current_level = 1
-            f = open('data/save.txt','r')
-            save_dat = f.readlines()
-            f.close()
-            save_dat[0] = save_dat[0][:-1]
-            if save_dat[0] == map_set:
-                if run_type == 'classic':
-                    current_level = int(save_dat[1])
-            level, items, decor, spawn, edges = load_map(map_set + '/level_' + str(current_level))
-            clouds = gen_clouds(edges)
-            void = edges[3]+32
-            text_box = [level_text[map_set][current_level],160]
-            ninja = entities.entity(spawn[0],spawn[1],8,15)
-            bombs = []
-            particles = []
-            speedrun_score = 0
-            speedrun_scores = []
-        stick_tilt = joystick.get_axis(stick_axis_id)
 
-        if stick_tilt > 0.7:
-            if right == False:
-                right = True
-                if ninja_direction == 'l':
-                    left = False
-                    particle_animations.append([turn_animation.start(ninja.x-4,ninja.y-1),turn_animation,True])
-        elif stick_tilt < -0.7:
-            if left == False:
-                left = True
-                if ninja_direction == 'r':
-                    right = False
-                    particle_animations.append([turn_animation.start(ninja.x-4,ninja.y-1),turn_animation,False])
-        else:
-            left = False
-            right = False
-
-        if a_button == 1:
-            if (win == 0) and (lose == 0):
-                wait_to_jump = 5
-        if l_trigger == 1:
-            if (win == 0) and (lose == 0):
-                if invisibility_timer == 0:
-                    invisibility_timer = 180
-                    poof_sound.play()
-                    for item in items:
-                        if item[0] == 'human.png':
-                            if item[4] == True:
-                                VOs[random.choice(['huh_1','huh_2','I_cant_see_him','umm','what','where_did_he_go'])].play()
-                                
-                    for i in range(40):
-                        size = random.randint(1,4)
-                        particles.append([ninja.x+random.randint(0,8),ninja.y+random.randint(0,15)-int(size/2),(random.randint(0,20)-10)/20,(random.randint(0,10)-10)/10,(132,136,155),True,random.randint(20,40),size,'poof'])
-                else:
-                    click_sound.play()
-        if r_trigger == 1:
-            if (win == 0) and (lose == 0):
-                if bomb_cooldown == 0:
-                    bomb_cooldown = 60
-                    if ninja_direction == 'r':
-                        bombs.append([ninja.x+4,ninja.y+4,5,-2,240])
-                    else:
-                        bombs.append([ninja.x+4,ninja.y+4,-5,-2,240])
-                else:
-                    click_sound.play()
-    
     # Buttons ------------------------------------------------ #
     for event in pygame.event.get():
         if event.type == QUIT:
@@ -1192,13 +975,13 @@ while True:
             if event.key == K_ESCAPE:
                 title_screen()
                 current_level = 1
-                f = open('data/save.txt','r')
-                save_dat = f.readlines()
-                f.close()
-                save_dat[0] = save_dat[0][:-1]
-                if save_dat[0] == map_set:
-                    if run_type == 'classic':
-                        current_level = int(save_dat[1])
+                # f = open('data/save.txt','r')
+                # save_dat = f.readlines()
+                # f.close()
+                # save_dat[0] = save_dat[0][:-1]
+                # if save_dat[0] == map_set:
+                if run_type == 'classic':
+                        pass
                 level, items, decor, spawn, edges = load_map(map_set + '/level_' + str(current_level))
                 clouds = gen_clouds(edges)
                 void = edges[3]+32
@@ -1294,9 +1077,10 @@ while True:
         if win == 1:
             current_level += 1
             if run_type == 'classic':
-                file = open('data/save.txt','w')
-                file.write(map_set + '\n' + str(current_level))
-                file.close()
+                # file = open('data/save.txt','w')
+                # file.write(map_set + '\n' + str(current_level))
+                # file.close()
+                pass
             if current_level != end_level:
                 level, items, decor, spawn, edges = load_map(map_set + '/level_' + str(current_level))
                 clouds = gen_clouds(edges)
@@ -1306,9 +1090,10 @@ while True:
                 bombs = []
                 particles = []
             elif run_type == 'classic':
-                file = open('data/save.txt','w')
-                file.write(map_set + '\n1')
-                file.close()
+                # file = open('data/save.txt','w')
+                # file.write(map_set + '\n1')
+                # file.close()
+                pass
             if run_type == 'segmented speedrun':
                 speedrun_scores.append(speedrun_score)
                 speedrun_score = 0
