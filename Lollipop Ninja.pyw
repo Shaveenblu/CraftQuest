@@ -18,16 +18,17 @@ WINDOWHEIGHT = 400
 screen = pygame.display.set_mode((WINDOWWIDTH, WINDOWHEIGHT),pygame.RESIZABLE)
 Display = pygame.Surface((300,200))
 
-# controller
+
 
     
 def load_img(path):
     img = pygame.image.load(path).convert()
+    #make all the white part of the image transparent
     img.set_colorkey((255,255,255))
     return img
 
 # Colors ----------------------------------------------------- #
-SKY = (194,219,251)
+SKY = (255,192,203)
 # Images ----------------------------------------------------- #
 tile_list = os.listdir('data/images/tiles')
 tile_database = {}
@@ -340,14 +341,7 @@ def gen_clouds(edges):
         for i in range(int(area/(1024*90))):
             clouds.append([random.choice(cloud_list),random.randint(x,x+size_x)/depth,random.randint(y,y+size_y)/depth,depth])
     return clouds
-# Controller Setup ------------------------------------------- #
 
-
-# Save File -------------------------------------------------- #
-# f = open('data/save.txt','r')
-# save_dat = f.readlines()
-# f.close()
-# save_dat[0] = save_dat[0][:-1]
 # Title Screen ----------------------------------------------- #
 global run_type
 run_type = 'classic' # classic, segmented speedrun, one-shot speedrun
@@ -368,7 +362,7 @@ def title_screen():
     run_types = ['classic', 'segmented speedrun', 'one-shot speedrun']
     map_sets_index = find(map_sets,map_set)
     run_types_index = find(run_types,run_type)
-    #Clear save
+
     menu_options = ['Lollipop', '', 'Play', 'Level Set: ' + map_set, 'Rules: ' + run_type, 'Exit']
     pointer = 2
     in_menu = True
@@ -423,14 +417,14 @@ def title_screen():
                         WINDOWHEIGHT = resolutions[resolution_index][1]
                         screen = pygame.display.set_mode((WINDOWWIDTH, WINDOWHEIGHT),pygame.RESIZABLE)
                     
-        menu_options = ['Lollipop', '', 'Play', 'Level Set: ' + map_set, 'Rules: ' + run_type, 'Resolution: ' + str(resolutions[resolution_index][0]) + 'x' + str(resolutions[resolution_index][1]), 'Clear Save', 'Exit']
+        menu_options = ['Lollipop', '', 'Play', 'Level Set: ' + map_set, 'Rules: ' + run_type, 'Resolution: ' + str(resolutions[resolution_index][0]) + 'x' + str(resolutions[resolution_index][1]), 'Exit']
         menu_options[pointer] = '- ' + menu_options[pointer]
         y = 0
         for option in menu_options:
             ShowText(option,4,4+y*12,1,245,Font_0,Display,overflow='normal')
             y += 1
         if WINDOWWIDTH > 900:
-            ShowText('You need a single beefy CPU core to run the game\nat this resolution.',110,64,1,245,Font_0,Display,overflow='normal')
+            ShowText('Need high perfomance CPU',110,64,1,245,Font_0,Display,overflow='normal')
         ratio = WINDOWWIDTH/WINDOWHEIGHT
         if ratio < 1.5:
             width = WINDOWWIDTH
@@ -442,11 +436,7 @@ def title_screen():
         pygame.display.update()
         mainClock.tick(40)
 title_screen()
-# Save File -------------------------------------------------- #
-# f = open('data/save.txt','r')
-# save_dat = f.readlines()
-# f.close()
-# save_dat[0] = save_dat[0][:-1]
+
 # Audio ------------------------------------------------------ #
 poof_sound = pygame.mixer.Sound('data/SFX/poof.wav')
 bomb_sound = pygame.mixer.Sound('data/SFX/bomb_poof.wav')
@@ -525,9 +515,7 @@ music.play(-1)
 
 current_level = 1
 
-# if save_dat[0] == map_set:
-#     if run_type == 'classic':
-#         current_level = int(save_dat[1])
+
 
 level, items, decor, spawn, edges = load_map(map_set + '/level_' + str(current_level))
 clouds = gen_clouds(edges)
@@ -960,7 +948,7 @@ while True:
                 Display.blit(tile_database[img],(tile[1]*32-scroll_x,tile[2]*32-5-scroll_y))
 
 
-    # Controller --------------------------------------------- #
+    
 
     # Buttons ------------------------------------------------ #
     for event in pygame.event.get():
@@ -975,11 +963,7 @@ while True:
             if event.key == K_ESCAPE:
                 title_screen()
                 current_level = 1
-                # f = open('data/save.txt','r')
-                # save_dat = f.readlines()
-                # f.close()
-                # save_dat[0] = save_dat[0][:-1]
-                # if save_dat[0] == map_set:
+  
                 if run_type == 'classic':
                         pass
                 level, items, decor, spawn, edges = load_map(map_set + '/level_' + str(current_level))
@@ -1077,9 +1061,7 @@ while True:
         if win == 1:
             current_level += 1
             if run_type == 'classic':
-                # file = open('data/save.txt','w')
-                # file.write(map_set + '\n' + str(current_level))
-                # file.close()
+
                 pass
             if current_level != end_level:
                 level, items, decor, spawn, edges = load_map(map_set + '/level_' + str(current_level))
@@ -1090,9 +1072,7 @@ while True:
                 bombs = []
                 particles = []
             elif run_type == 'classic':
-                # file = open('data/save.txt','w')
-                # file.write(map_set + '\n1')
-                # file.close()
+
                 pass
             if run_type == 'segmented speedrun':
                 speedrun_scores.append(speedrun_score)
